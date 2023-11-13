@@ -1,0 +1,50 @@
+using Microsoft.Extensions.DependencyInjection;
+using System;
+
+// Interface for a sample service
+public interface IMyService
+{
+    void PerformAction();
+}
+
+// Implementation of the service
+public class MyService : IMyService
+{
+    public void PerformAction()
+    {
+        Console.WriteLine("Action performed by MyService");
+    }
+}
+
+// Class that depends on IMyService through constructor injection
+public class MyClass
+{
+    private readonly IMyService _myService;
+
+    public MyClass(IMyService myService)
+    {
+        _myService = myService;
+    }
+
+    public void DoSomething()
+    {
+        Console.WriteLine("MyClass is doing something.");
+        _myService.PerformAction();
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        // Setting up Dependency Injection in ASP.NET Core
+        var serviceProvider = new ServiceCollection()
+            .AddSingleton<IMyService, MyService>()
+            .AddTransient<MyClass>() // Transient lifetime for MyClass
+            .BuildServiceProvider();
+
+        // Resolving and using the service through Dependency Injection
+        var myClassInstance = serviceProvider.GetService<MyClass>();
+        myClassInstance.DoSomething();
+    }
+}
